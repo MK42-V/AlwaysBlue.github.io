@@ -103,20 +103,26 @@ Chart {
 ### 图表种类
 
 - AreaMark
+
 ![](./pics/mark_area.png)
 
 - LineMark
+
 ![](./pics/mark_line.png)
 
 - PointMark
+
 ![](./pics/mark_point.png)
 
 - RectangleMark
+
 ![](./pics/mark_rectangle.png)
 
 - RuleMark
+
 ![](./pics/mark_rule.png)
 
 - BarMark
+
 ![](./pics/mark_bar.png)
 
