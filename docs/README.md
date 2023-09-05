@@ -7,3 +7,5 @@
 [Flutter/Dart 常用命令行](flutter_dart_command.md)
 
 [Flutter Game: Tank Combat](tank_combat.md)
+
+[Swift Charts](swift_chart.md)
