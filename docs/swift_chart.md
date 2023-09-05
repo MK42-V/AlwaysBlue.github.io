@@ -2,6 +2,7 @@
 
 ### 快速搭建一个图表
 1. 确定数据结构
+
 ```swift
 struct ToyShape: Identifiable {
     var type: String
@@ -9,7 +10,9 @@ struct ToyShape: Identifiable {
     var id = UUID()
 }
 ```
+
 2. 初始化数据
+
 ```swift
 var data: [ToyShape] = [
     .init(type: "Cube", count: 5),
@@ -17,7 +20,9 @@ var data: [ToyShape] = [
     .init(type: "Pyramid", count: 4)
 ]
 ```
+
 3. 创建Chart（使用BarMark）
+
 ```swift
 import SwiftUI
 import Charts
@@ -39,6 +44,7 @@ struct BarChart: View {
 ![](./pics/quick_chart1.png)
 
 4. 使用不同颜色区分
+
 ```swift
 struct ToyShape: Identifiable {
     var color: String
@@ -76,6 +82,7 @@ Chart {
 ![](./pics/quick_chart2.png)
 
 5. 自定义颜色图示含义
+
 ```swift
 Chart {
     ForEach(stackedBarData) { shape in
