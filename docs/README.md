@@ -9,3 +9,7 @@
 [Flutter Game: Tank Combat](tank_combat.md)
 
 [Swift Charts](swift_chart.md)
+
+[Flutter Widget](flutter_widget.md)
+
+[LeetCode Hot 100 Swift](leetcode_hot_100.md)
