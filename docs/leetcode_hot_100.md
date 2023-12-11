@@ -1,11 +1,8 @@
 # 1.两数之和
 
 - 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
-
 - 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
-
 - 你可以按任意顺序返回答案。
-
 
 ```swift
 func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
@@ -27,26 +24,24 @@ func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
 - 输出: [["bat"],["nat","tan"],["ate","eat","tea"]]
 
 ```Swift
-class Solution {
-    func groupAnagrams(_ strs: [String]) -> [[String]] {
-        var anagrams: [String: [String]] = [:]
+func groupAnagrams(_ strs: [String]) -> [[String]] {
+    var anagrams: [String: [String]] = [:]
 
-        for word in strs {
-            // 将单词排序，以确保字母异位词具有相同的键
-            let sortedWord = String(word.sorted())
+    for word in strs {
+        // 将单词排序，以确保字母异位词具有相同的键
+        let sortedWord = String(word.sorted())
 
-            // 将排序后的单词作为键，原始单词添加到对应的值列表中
-            if var anagramGroup = anagrams[sortedWord] {
-                anagramGroup.append(word)
-                anagrams[sortedWord] = anagramGroup
-            } else {
-                anagrams[sortedWord] = [word]
-            }
+        // 将排序后的单词作为键，原始单词添加到对应的值列表中
+        if var anagramGroup = anagrams[sortedWord] {
+            anagramGroup.append(word)
+            anagrams[sortedWord] = anagramGroup
+        } else {
+            anagrams[sortedWord] = [word]
         }
-
-        // 返回结果，即分好组的字母异位词
-        return Array(anagrams.values)
     }
+
+    // 返回结果，即分好组的字母异位词
+    return Array(anagrams.values)
 }
 ```
 
@@ -84,24 +79,23 @@ func longestConsecutive(_ nums: [Int]) -> Int {
 ```
 
 # 4.移动零
+
 - 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
 - 必须在不复制数组的情况下原地对数组进行操作。
 
 ```Swift
-class Solution {
-    func moveZeroes(_ nums: inout [Int]) {
-        var slow = 0
-        // 移动零 等价于 移动非零后，后面补0
-        for num in nums {
-            if num != 0 {
-                nums[slow] = num
-                slow += 1
-            }
+func moveZeroes(_ nums: inout [Int]) {
+    var slow = 0
+    // 移动零 等价于 移动非零后，后面补0
+    for num in nums {
+        if num != 0 {
+            nums[slow] = num
+            slow += 1
         }
-        if slow < nums.count {
-            for index in slow...nums.count - 1 {
-                nums[index] = 0
-            }
+    }
+    if slow < nums.count {
+        for index in slow...nums.count - 1 {
+            nums[index] = 0
         }
     }
 }
@@ -109,121 +103,113 @@ class Solution {
 
 # 5.盛水最多的容器
 
-- 给定一个长度为 n 的整数数组 height 。有 n 条垂线，第 i 条线的两个端点是 (i, 0) 和 (i, height[i]) 。
-
-- 找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
-
+- 给定一个长度为 n 的整数数组 height 。有 n 条垂线，第 i 条线的两个端点是 (i, 0) 和 (i, height[i]) 
+- 找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水
 - 返回容器可以储存的最大水量。
 
 ```Swift
-class Solution {
-    func maxArea(_ height: [Int]) -> Int {
-        var left = 0
-        var right = height.count - 1
-        var capacity = 0
-        while left < right {
-            let h = min(height[left], height[right])
-            let w = right - left
-            capacity = max(capacity, h * w)
+func maxArea(_ height: [Int]) -> Int {
+    var left = 0
+    var right = height.count - 1
+    var capacity = 0
+    while left < right {
+        let h = min(height[left], height[right])
+        let w = right - left
+        capacity = max(capacity, h * w)
 
-            if height[left] < height[right] {
-                left += 1
-            } else {
-                right -= 1
-            }
+        if height[left] < height[right] {
+            left += 1
+        } else {
+            right -= 1
         }
-        return capacity
     }
+    return capacity
 }
 ```
 
 # 6.三数之和
 
 ```Swift
-class Solution {
-    func threeSum(_ nums: [Int]) -> [[Int]] {
-        var result: [[Int]] = []
+func threeSum(_ nums: [Int]) -> [[Int]] {
+    var result: [[Int]] = []
+
+    // 首先对数组进行排序
+    let sortedNums = nums.sorted()
     
-        // 首先对数组进行排序
-        let sortedNums = nums.sorted()
-        
-        for i in 0..<sortedNums.count - 2 {
-            // 避免重复的三元组
-            if i > 0 && sortedNums[i] == sortedNums[i - 1] {
-                continue
-            }
-            
-            var left = i + 1
-            var right = sortedNums.count - 1
-            
-            while left < right {
-                let sum = sortedNums[i] + sortedNums[left] + sortedNums[right]
-                
-                if sum == 0 {
-                    // 找到一个符合条件的三元组
-                    result.append([sortedNums[i], sortedNums[left], sortedNums[right]])
-                    
-                    // 避免重复的元素
-                    while left < right && sortedNums[left] == sortedNums[left + 1] {
-                        left += 1
-                    }
-                    while left < right && sortedNums[right] == sortedNums[right - 1] {
-                        right -= 1
-                    }
-                    
-                    // 移动指针
-                    left += 1
-                    right -= 1
-                } else if sum < 0 {
-                    left += 1
-                } else {
-                    right -= 1
-                }
-            }
+    for i in 0..<sortedNums.count - 2 {
+        // 避免重复的三元组
+        if i > 0 && sortedNums[i] == sortedNums[i - 1] {
+            continue
         }
         
-        return result
+        var left = i + 1
+        var right = sortedNums.count - 1
+        
+        while left < right {
+            let sum = sortedNums[i] + sortedNums[left] + sortedNums[right]
+            
+            if sum == 0 {
+                // 找到一个符合条件的三元组
+                result.append([sortedNums[i], sortedNums[left], sortedNums[right]])
+                
+                // 避免重复的元素
+                while left < right && sortedNums[left] == sortedNums[left + 1] {
+                    left += 1
+                }
+                while left < right && sortedNums[right] == sortedNums[right - 1] {
+                    right -= 1
+                }
+                
+                // 移动指针
+                left += 1
+                right -= 1
+            } else if sum < 0 {
+                left += 1
+            } else {
+                right -= 1
+            }
+        }
     }
+    
+    return result
 }
 ```
 
 # 7.接雨水
 
 ```Swift
-class Solution {
-    func trap(_ height: [Int]) -> Int {
-        // 无法形成凹槽，返回0
-        guard height.count > 2 else { return 0 }
+func trap(_ height: [Int]) -> Int {
+    // 无法形成凹槽，返回0
+    guard height.count > 2 else { return 0 }
 
-        var left = 0
-        var right = height.count - 1
-        
-        // 左边的最大高度
-        var leftMax = 0 
-        // 右边的最大高度
-        var rightMax = 0 
-        // 储水量结果
-        var result = 0 
+    var left = 0
+    var right = height.count - 1
+    
+    // 左边的最大高度
+    var leftMax = 0 
+    // 右边的最大高度
+    var rightMax = 0 
+    // 储水量结果
+    var result = 0 
 
-        while left < right {
-            // 更新左边的最大值
-            leftMax = max(leftMax, height[left]) 
-            // 更新右边的最大值
-            rightMax = max(rightMax, height[right])
+    while left < right {
+        // 更新左边的最大值
+        leftMax = max(leftMax, height[left]) 
+        // 更新右边的最大值
+        rightMax = max(rightMax, height[right])
 
-            if height[left] < height[right] {
-                // 如果左边的高度比较小，计算左边的储水量
-                result += leftMax - height[left]
-                left += 1
-            } else {
-                // 如果右边的高度比较小，计算右边的储水量
-                result += rightMax - height[right]
-                right -= 1
-            }
+        if height[left] < height[right] {
+            // 如果左边的高度比较小，计算左边的储水量
+            result += leftMax - height[left]
+            left += 1
+        } else {
+            // 如果右边的高度比较小，计算右边的储水量
+            result += rightMax - height[right]
+            right -= 1
         }
-
-        return result
     }
+
+    return result
 }
 ```
 
@@ -307,30 +293,28 @@ func findAnagrams(_ s: String, _ p: String) -> [Int] {
 - 给你一个整数数组 nums 和一个整数 k ，请你统计并返回 该数组中和为 k 的子数组的个数
 
 ```Swift
-class Solution {
-    func subarraySum(_ nums: [Int], _ k: Int) -> Int {
-        var prefixSum = 0
-        var count = 0
-        var sumFrequency: [Int : Int] = [0 : 1] // 用于存储前缀和的频率
+func subarraySum(_ nums: [Int], _ k: Int) -> Int {
+    var prefixSum = 0
+    var count = 0
+    var sumFrequency: [Int : Int] = [0 : 1] // 用于存储前缀和的频率
 
-        for num in nums {
-            prefixSum += num
+    for num in nums {
+        prefixSum += num
 
-            // 查找前缀和为 prefixSum - k 的频率
-            if let frequency = sumFrequency[prefixSum - k] {
-                count += frequency
-            }
-
-            // 更新当前前缀和的频率
-            if let existingValue = sumFrequency[prefixSum] {
-                sumFrequency[prefixSum] = existingValue + 1
-            } else {
-                sumFrequency[prefixSum] = 1
-            }
+        // 查找前缀和为 prefixSum - k 的频率
+        if let frequency = sumFrequency[prefixSum - k] {
+            count += frequency
         }
 
-        return count
+        // 更新当前前缀和的频率
+        if let existingValue = sumFrequency[prefixSum] {
+            sumFrequency[prefixSum] = existingValue + 1
+        } else {
+            sumFrequency[prefixSum] = 1
+        }
     }
+
+    return count
 }
 ```
 
@@ -364,118 +348,106 @@ func maxSubArray(_ nums: [Int]) -> Int {
 # 14.合并区间
 
 ```Swift
-class Solution {
-    func merge(_ intervals: [[Int]]) -> [[Int]] {
-        guard intervals.count > 1 else {
-            return intervals
-        }
-
-        var sortedIntervals = intervals.sorted { $0[0] < $1[0] }
-        var mergedIntervals: [[Int]] = []
-
-        for interval in sortedIntervals {
-            if mergedIntervals.isEmpty || interval[0] > mergedIntervals.last![1] {
-                // 无重叠，直接添加新的区间
-                mergedIntervals.append(interval)
-            } else {
-                // 有重叠，合并区间
-                mergedIntervals[mergedIntervals.count - 1][1] = max(mergedIntervals.last![1], interval[1])
-            }
-        }
-
-        return mergedIntervals
+func merge(_ intervals: [[Int]]) -> [[Int]] {
+    guard intervals.count > 1 else {
+        return intervals
     }
+
+    var sortedIntervals = intervals.sorted { $0[0] < $1[0] }
+    var mergedIntervals: [[Int]] = []
+
+    for interval in sortedIntervals {
+        if mergedIntervals.isEmpty || interval[0] > mergedIntervals.last![1] {
+            // 无重叠，直接添加新的区间
+            mergedIntervals.append(interval)
+        } else {
+            // 有重叠，合并区间
+            mergedIntervals[mergedIntervals.count - 1][1] = max(mergedIntervals.last![1], interval[1])
+        }
+    }
+
+    return mergedIntervals
 }
 ```
 
 # 两数相加
-给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
 
-请你将两个数相加，并以相同形式返回一个表示和的链表。
-
-你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
-
+- 给你两个 非空 的链表，表示两个非负的整数。它们每位数字都是按照 逆序 的方式存储的，并且每个节点只能存储 一位 数字。
+- 请你将两个数相加，并以相同形式返回一个表示和的链表。
+- 你可以假设除了数字 0 之外，这两个数都不会以 0 开头。
 - 每一位计算的同时需要考虑上一位的进位问题，而当前位计算结束后同样需要更新进位值
 - 如果两个链表全部遍历完毕后，进位值为 1，则在新链表最前方添加节点 1
 - 对于链表问题，返回结果为头结点时，通常需要先初始化一个预先指针 pre，该指针的下一个节点指向真正的头结点 head。使用预先指针的目的在于链表初始化时无可用节点值，而且链表构造过程需要指针移动，进而会导致头指针丢失，无法返回结果。
 
 ```Swift
-class Solution {
-    func addTwoNumbers(_ l1: ListNode?, _ l2: ListNode?) -> ListNode? {
-        var preNode = ListNode(0)
-        var curNode: ListNode? = preNode
-        var carry = 0
+func addTwoNumbers(_ l1: ListNode?, _ l2: ListNode?) -> ListNode? {
+    var preNode = ListNode(0)
+    var curNode: ListNode? = preNode
+    var carry = 0
 
-        var l1 = l1
-        var l2 = l2
-        while l1 != nil || l2 != nil {
-            let x = l1?.val ?? 0
-            let y = l2?.val ?? 0
-            let sum = x + y + carry
-            carry = sum / 10
-            let newNode = ListNode(sum % 10)
-            curNode?.next = newNode
-            // 当前节点判断完成所有链表的节点都向后移一个
-            curNode = curNode?.next
-            l1 = l1?.next
-            l2 = l2?.next
-        }
-
-        if carry == 1 {
-            curNode?.next = ListNode(1)
-        }
-
-        return preNode.next
+    var l1 = l1
+    var l2 = l2
+    while l1 != nil || l2 != nil {
+        let x = l1?.val ?? 0
+        let y = l2?.val ?? 0
+        let sum = x + y + carry
+        carry = sum / 10
+        let newNode = ListNode(sum % 10)
+        curNode?.next = newNode
+        // 当前节点判断完成所有链表的节点都向后移一个
+        curNode = curNode?.next
+        l1 = l1?.next
+        l2 = l2?.next
     }
+
+    if carry == 1 {
+        curNode?.next = ListNode(1)
+    }
+
+    return preNode.next
 }
 ```
 
 
 # 爬楼梯
 ```Swift
-class Solution {
-    func climbStairs(_ n: Int) -> Int {
-        if n < 3 {
-            return n
-        }
-        var map = [Int : Int]()
-        map[1] = 1
-        map[2] = 2
-        for index in 3...n {
-            map[index] = map[index - 1]! + map[index - 2]!
-        }
-        return map[n]!
+func climbStairs(_ n: Int) -> Int {
+    if n < 3 {
+        return n
     }
+    var map = [Int : Int]()
+    map[1] = 1
+    map[2] = 2
+    for index in 3...n {
+        map[index] = map[index - 1]! + map[index - 2]!
+    }
+    return map[n]!
 }
 ```
 
 # 二叉树的中序遍历
 
 ```Swift
-class Solution {
-    func inorderTraversal(_ root: TreeNode?) -> [Int] {
-        var values: [Int] = []
-        dfs(root, &values)
-        return values
-    }
+func inorderTraversal(_ root: TreeNode?) -> [Int] {
+    var values: [Int] = []
+    dfs(root, &values)
+    return values
+}
 
-    func dfs(_ root: TreeNode?, _ values: inout [Int]) {
-        guard let root = root else { return }
-        dfs(root.left, &values)
-        values.append(root.val)
-        dfs(root.right, &values)
-    }
+func dfs(_ root: TreeNode?, _ values: inout [Int]) {
+    guard let root = root else { return }
+    dfs(root.left, &values)
+    values.append(root.val)
+    dfs(root.right, &values)
 }
 ```
 
 # 二叉树的最大深度
 
 ```Swift
-class Solution {
-    func maxDepth(_ root: TreeNode?) -> Int {
-        guard let root = root else { return 0 }
-        return max(maxDepth(root.left), maxDepth(root.right)) + 1 
-    }
+func maxDepth(_ root: TreeNode?) -> Int {
+    guard let root = root else { return 0 }
+    return max(maxDepth(root.left), maxDepth(root.right)) + 1 
 }
 ```
 
@@ -483,19 +455,17 @@ class Solution {
 
 # 相交链表
 ```Swift
-class Solution {
-    func getIntersectionNode(_ headA: ListNode?, _ headB: ListNode?) -> ListNode? {
-        var currentA = headA
-        var currentB = headB
-        if currentA == nil || currentB == nil {
-            return nil
-        }
-        while currentA !== currentB {
-            currentA = (currentA == nil) ? headB : currentA?.next
-            currentB = (currentB == nil) ? headA : currentB?.next
-        }
-        return currentA
+func getIntersectionNode(_ headA: ListNode?, _ headB: ListNode?) -> ListNode? {
+    var currentA = headA
+    var currentB = headB
+    if currentA == nil || currentB == nil {
+        return nil
     }
+    while currentA !== currentB {
+        currentA = (currentA == nil) ? headB : currentA?.next
+        currentB = (currentB == nil) ? headA : currentB?.next
+    }
+    return currentA
 }
 ```
 
@@ -518,86 +488,80 @@ func reverseList(_ head: ListNode?) -> ListNode? {
 # 回文链表
 
 ```Swift
-class Solution {
-    func isPalindrome(_ head: ListNode?) -> Bool {
-        // 要求 O(n) 时间复杂度和 O(1) 空间复杂度
-        // 如果链表为空或只有一个节点，认为是回文链表
-        if head == nil || head?.next == nil {
-            return true
-        }
-        // 使用快慢指针找到链表的中点
-        var slow = head
-        var fast = head
-        while fast?.next != nil {
-            slow = slow?.next
-            fast = fast?.next?.next
-        }
-        // 反转后半部分链表
-        var half = reverseList(slow)
-        var start = head
-        // 比较前半部分和反转后的后半部分是否相等
-        while half != nil {
-            if half?.val != start?.val {
-                return false
-            }
-            half = half?.next
-            start = start?.next
-        }
+func isPalindrome(_ head: ListNode?) -> Bool {
+    // 要求 O(n) 时间复杂度和 O(1) 空间复杂度
+    // 如果链表为空或只有一个节点，认为是回文链表
+    if head == nil || head?.next == nil {
         return true
     }
-    
-    func reverseList(_ head: ListNode?) -> ListNode? {
-        var pre: ListNode? = nil
-        var current = head
-
-        while current != nil {
-            var tmp = current!.next
-            current!.next = pre
-            pre = current
-            current = tmp
-        }
-        return pre
+    // 使用快慢指针找到链表的中点
+    var slow = head
+    var fast = head
+    while fast?.next != nil {
+        slow = slow?.next
+        fast = fast?.next?.next
     }
+    // 反转后半部分链表
+    var half = reverseList(slow)
+    var start = head
+    // 比较前半部分和反转后的后半部分是否相等
+    while half != nil {
+        if half?.val != start?.val {
+            return false
+        }
+        half = half?.next
+        start = start?.next
+    }
+    return true
+}
+
+func reverseList(_ head: ListNode?) -> ListNode? {
+    var pre: ListNode? = nil
+    var current = head
+
+    while current != nil {
+        var tmp = current!.next
+        current!.next = pre
+        pre = current
+        current = tmp
+    }
+    return pre
 }
 ```
 
 # 环形链表
 
 ```Swift
-class Solution {
-    func hasCycle(_ head: ListNode?) -> Bool {
-        var slow = head
-        var fast = head?.next
-        while slow != nil && fast?.next != nil {
-            if slow === fast {
-                return true
-            }
-            slow = slow?.next
-            fast = fast?.next?.next
+func hasCycle(_ head: ListNode?) -> Bool {
+    var slow = head
+    var fast = head?.next
+    while slow != nil && fast?.next != nil {
+        if slow === fast {
+            return true
         }
-        return false
+        slow = slow?.next
+        fast = fast?.next?.next
     }
+    return false
 }
 ```
 
 # 合并两个有序链表
 
 ```Swift
-class Solution {
-    func mergeTwoLists(_ list1: ListNode?, _ list2: ListNode?) -> ListNode? {
-        if list1 == nil { 
-            return list2 
-        }
-        if list2 == nil {
-            return list1
-        }
-        if list1!.val <= list2!.val {
-            list1!.next = mergeTwoLists(list1?.next, list2)
-            return list1
-        } else {
-            list2!.next = mergeTwoLists(list1, list2?.next)
-            return list2
-        }
+func mergeTwoLists(_ list1: ListNode?, _ list2: ListNode?) -> ListNode? {
+    if list1 == nil { 
+        return list2 
+    }
+    if list2 == nil {
+        return list1
+    }
+    if list1!.val <= list2!.val {
+        list1!.next = mergeTwoLists(list1?.next, list2)
+        return list1
+    } else {
+        list2!.next = mergeTwoLists(list1, list2?.next)
+        return list2
     }
 }
 ```
@@ -605,171 +569,155 @@ class Solution {
 # 多数元素
 
 - 给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
-
 - 你可以假设数组是非空的，并且给定的数组总是存在多数元素。
 
 ```Swift
-class Solution {
-    func majorityElement(_ nums: [Int]) -> Int {
-        var count = 0
-        var majority = 0
-        for (index, num) in nums.enumerated() {
-            if count == 0 {
-                majority = num
-                count += 1
-            } else if (majority == num) {
-                count += 1
-            } else {
-                count -= 1
-            }
+func majorityElement(_ nums: [Int]) -> Int {
+    var count = 0
+    var majority = 0
+    for (index, num) in nums.enumerated() {
+        if count == 0 {
+            majority = num
+            count += 1
+        } else if (majority == num) {
+            count += 1
+        } else {
+            count -= 1
         }
-        return majority
     }
+    return majority
 }
 ```
 
 # 买卖股票的最佳时机
 
 ```Swift
-class Solution {
-    func maxProfit(_ prices: [Int]) -> Int {
-        var cost = prices[0]
-        var profit = 0
-        for (index, price) in prices.enumerated() {
-            cost = min(cost, price)
-            profit = max(profit, price - cost)
-        }
-        return profit
+func maxProfit(_ prices: [Int]) -> Int {
+    var cost = prices[0]
+    var profit = 0
+    for (index, price) in prices.enumerated() {
+        cost = min(cost, price)
+        profit = max(profit, price - cost)
     }
+    return profit
 }
 ```
 
 # 杨辉三角
 
 ```Swift
-class Solution {
-    func generate(_ numRows: Int) -> [[Int]] {
-        var triangle = [[Int]]()
-        for i in 0..<numRows {
-            var row = [Int](repeating: 1, count: i + 1)
-            // 从第三行开始迭代
-            if i > 1 {
-                for j in 1..<i {
-                    // 计算当前行的非首尾元素。
-                    // 在第三行及以后的行，非首尾元素的值是上一行对应位置和前一位置的元素之和。
-                    // triangle[i - 1]代表上一行
-                    row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j]
-                }
+func generate(_ numRows: Int) -> [[Int]] {
+    var triangle = [[Int]]()
+    for i in 0..<numRows {
+        var row = [Int](repeating: 1, count: i + 1)
+        // 从第三行开始迭代
+        if i > 1 {
+            for j in 1..<i {
+                // 计算当前行的非首尾元素。
+                // 在第三行及以后的行，非首尾元素的值是上一行对应位置和前一位置的元素之和。
+                // triangle[i - 1]代表上一行
+                row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j]
             }
-            triangle.append(row)
         }
-        return triangle
+        triangle.append(row)
     }
+    return triangle
 }
 ```
 
 # 有效的括号
 ```Swift
-class Solution {
-    func isValid(_ s: String) -> Bool {
-        var left: [String] = []
-        let map = ["}" : "{", ")" : "(", "]" : "["]
-    
-        for char in s {
-            if char == "{" || char == "[" || char == "(" {
-                left.append(String(char))
-            } else {
-                if let last = left.last {
-                    if last == map[String(char)] {
-                        left.removeLast()
-                    } else { 
-                        return false
-                    }
-                } else {
+func isValid(_ s: String) -> Bool {
+    var left: [String] = []
+    let map = ["}" : "{", ")" : "(", "]" : "["]
+
+    for char in s {
+        if char == "{" || char == "[" || char == "(" {
+            left.append(String(char))
+        } else {
+            if let last = left.last {
+                if last == map[String(char)] {
+                    left.removeLast()
+                } else { 
                     return false
                 }
+            } else {
+                return false
             }
         }
-
-        return (left.count == 0)
     }
+
+    return (left.count == 0)
 }
 ```
 
 # 搜索插入位置
 
 - 给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
-
 - 请必须使用时间复杂度为 O(log n) 的算法。
 
 ```Swift
-class Solution {
-    func searchInsert(_ nums: [Int], _ target: Int) -> Int {
-        var low = 0
-        var high = nums.count - 1
-        while low <= high {
-            let mid = low + (high - low) / 2
-            if nums[mid] == target {
-                return mid
-            } else if nums[mid] < target {
-                low = mid + 1
-            } else {
-                high = mid - 1
-            }
+func searchInsert(_ nums: [Int], _ target: Int) -> Int {
+    var low = 0
+    var high = nums.count - 1
+    while low <= high {
+        let mid = low + (high - low) / 2
+        if nums[mid] == target {
+            return mid
+        } else if nums[mid] < target {
+            low = mid + 1
+        } else {
+            high = mid - 1
         }
-        return low
     }
+    return low
 }
 ```
 
 # 翻转二叉树
 
 ```Swift
-class Solution {
-    func invertTree(_ root: TreeNode?) -> TreeNode? {
-        guard let root = root else { return nil }
+func invertTree(_ root: TreeNode?) -> TreeNode? {
+    guard let root = root else { return nil }
 
-        let left = invertTree(root.left)
-        let right = invertTree(root.right)
+    let left = invertTree(root.left)
+    let right = invertTree(root.right)
 
-        root.left = right
-        root.right = left
+    root.left = right
+    root.right = left
 
-        return root
-    }
+    return root
 }
 ```
 
 # 对称二叉树
 ```Swift
-class Solution {
-    func isSymmetric(_ root: TreeNode?) -> Bool {
-        // 辅助函数，判断两个树是否是对称的
-        func isMirror(_ left: TreeNode?, _ right: TreeNode?) -> Bool {
-            // 两个节点都为空，对称
-            if left == nil, right == nil {
-                return true
-            }
-            // 一个节点为空，一个节点非空，不对称
-            if left == nil || right == nil {
-                return false
-            }
-            // 两个节点的值不相等，不对称
-            if left!.val != right!.val {
-                return false
-            }
-            // 递归判断左子树的左子树与右子树的右子树，左子树的右子树与右子树的左子树是否对称
-            return isMirror(left?.left, right?.right) && isMirror(left?.right, right?.left)
-        }
-
-        // 根节点为空，对称
-        guard let root = root else {
+func isSymmetric(_ root: TreeNode?) -> Bool {
+    // 辅助函数，判断两个树是否是对称的
+    func isMirror(_ left: TreeNode?, _ right: TreeNode?) -> Bool {
+        // 两个节点都为空，对称
+        if left == nil, right == nil {
             return true
         }
-
-        // 调用辅助函数判断左右子树是否对称
-        return isMirror(root.left, root.right)
+        // 一个节点为空，一个节点非空，不对称
+        if left == nil || right == nil {
+            return false
+        }
+        // 两个节点的值不相等，不对称
+        if left!.val != right!.val {
+            return false
+        }
+        // 递归判断左子树的左子树与右子树的右子树，左子树的右子树与右子树的左子树是否对称
+        return isMirror(left?.left, right?.right) && isMirror(left?.right, right?.left)
     }
+
+    // 根节点为空，对称
+    guard let root = root else {
+        return true
+    }
+
+    // 调用辅助函数判断左右子树是否对称
+    return isMirror(root.left, root.right)
 }
 ```
 
@@ -846,38 +794,34 @@ func levelOrder(_ root: TreeNode?) -> [[Int]] {
 - 高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
 
 ```Swift
-class Solution {
-    func sortedArrayToBST(_ nums: [Int]) -> TreeNode? {
-        // 辅助函数，构建高度平衡二叉搜索树
-        func buildBST(_ left: Int, _ right: Int) -> TreeNode? {
-            // 递归基：左边界大于右边界，返回nil
-            if left > right {
-                return nil
-            }
-
-            // 选择中间位置的元素作为根节点
-            let mid = left + (right - left) / 2
-            let root = TreeNode(nums[mid])
-
-            // 递归构建左右子树
-            root.left = buildBST(left, mid - 1)
-            root.right = buildBST(mid + 1, right)
-
-            return root
+func sortedArrayToBST(_ nums: [Int]) -> TreeNode? {
+    // 辅助函数，构建高度平衡二叉搜索树
+    func buildBST(_ left: Int, _ right: Int) -> TreeNode? {
+        // 递归基：左边界大于右边界，返回nil
+        if left > right {
+            return nil
         }
 
-        // 调用辅助函数开始构建二叉搜索树
-        return buildBST(0, nums.count - 1)
+        // 选择中间位置的元素作为根节点
+        let mid = left + (right - left) / 2
+        let root = TreeNode(nums[mid])
+
+        // 递归构建左右子树
+        root.left = buildBST(left, mid - 1)
+        root.right = buildBST(mid + 1, right)
+
+        return root
     }
+
+    // 调用辅助函数开始构建二叉搜索树
+    return buildBST(0, nums.count - 1)
 }
 ```
 
 # 最小栈
 
 - 设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
-
 - 实现 MinStack 类:
-
 - MinStack() 初始化堆栈对象。
 - void push(int val) 将元素val推入堆栈。
 - void pop() 删除堆栈顶部的元素。
@@ -923,74 +867,59 @@ class MinStack {
 # 跳跃游戏
 
 - 给你一个非负整数数组 nums ，你最初位于数组的 第一个下标 。数组中的每个元素代表你在该位置可以跳跃的最大长度。
-
 - 判断你是否能够到达最后一个下标，如果可以，返回 true ；否则，返回 false 。
 
 ```Swift
-class Solution {
-    func canJump(_ nums: [Int]) -> Bool {
-        var maxReach = 0
+func canJump(_ nums: [Int]) -> Bool {
+    var maxReach = 0
 
-        for (index, num) in nums.enumerated() {
-            // 当前位置超过最远距离
-            if index > maxReach {
-                return false
-            }
-            maxReach = max(maxReach, index + num)
-            if maxReach >= nums.count - 1 {
-                return true
-            }
+    for (index, num) in nums.enumerated() {
+        // 当前位置超过最远距离
+        if index > maxReach {
+            return false
         }
-        return false
+        maxReach = max(maxReach, index + num)
+        if maxReach >= nums.count - 1 {
+            return true
+        }
     }
+    return false
 }
 ```
-
-
-
-
-
-
-
-
-
-
 
 # 矩阵置零
 
 ```Swift
-class Solution {
-    func setZeroes(_ matrix: inout [[Int]]) {
-        guard !matrix.isEmpty else {
-            return
+func setZeroes(_ matrix: inout [[Int]]) {
+    guard !matrix.isEmpty else {
+        return
+    }
+
+    let rows = matrix.count
+    let cols = matrix[0].count
+    var zeroRows = Set<Int>()
+    var zeroCols = Set<Int>()
+
+    // 找到所有包含零的行和列
+    for i in 0..<rows {
+        for j in 0..<cols {
+            if matrix[i][j] == 0 {
+                zeroRows.insert(i)
+                zeroCols.insert(j)
+            }
         }
+    }
 
-        let rows = matrix.count
-        let cols = matrix[0].count
-        var zeroRows = Set<Int>()
-        var zeroCols = Set<Int>()
+    // 将零所在的行和列置零
+    for row in zeroRows {
+        for j in 0..<cols {
+            matrix[row][j] = 0
+        }
+    }
 
-        // 找到所有包含零的行和列
+    for col in zeroCols {
         for i in 0..<rows {
-            for j in 0..<cols {
-                if matrix[i][j] == 0 {
-                    zeroRows.insert(i)
-                    zeroCols.insert(j)
-                }
-            }
-        }
-
-        // 将零所在的行和列置零
-        for row in zeroRows {
-            for j in 0..<cols {
-                matrix[row][j] = 0
-            }
-        }
-
-        for col in zeroCols {
-            for i in 0..<rows {
-                matrix[i][col] = 0
-            }
+            matrix[i][col] = 0
         }
     }
 }
@@ -1054,134 +983,125 @@ func rotate(_ nums: inout [Int], _ k: Int) {
 # 除自身以外所有数组的乘积
 
 ```Swift
-class Solution {
-    func productExceptSelf(_ nums: [Int]) -> [Int] {
-        let n = nums.count
-        var leftProducts = Array(repeating: 1, count: n)
-        var rightProducts = Array(repeating: 1, count: n)
-        var result = Array(repeating: 1, count: n)
+func productExceptSelf(_ nums: [Int]) -> [Int] {
+    let n = nums.count
+    var leftProducts = Array(repeating: 1, count: n)
+    var rightProducts = Array(repeating: 1, count: n)
+    var result = Array(repeating: 1, count: n)
 
-        // 计算左侧所有元素的乘积
-        var leftProduct = 1
-        for i in 0..<n {
-            leftProducts[i] = leftProduct
-            leftProduct *= nums[i]
-        }
-
-        // 计算右侧所有元素的乘积
-        var rightProduct = 1
-        for i in (0..<n).reversed() {
-            rightProducts[i] = rightProduct
-            rightProduct *= nums[i]
-        }
-
-        // 计算最终结果
-        for i in 0..<n {
-            result[i] = leftProducts[i] * rightProducts[i]
-        }
-
-        return result
+    // 计算左侧所有元素的乘积
+    var leftProduct = 1
+    for i in 0..<n {
+        leftProducts[i] = leftProduct
+        leftProduct *= nums[i]
     }
+
+    // 计算右侧所有元素的乘积
+    var rightProduct = 1
+    for i in (0..<n).reversed() {
+        rightProducts[i] = rightProduct
+        rightProduct *= nums[i]
+    }
+
+    // 计算最终结果
+    for i in 0..<n {
+        result[i] = leftProducts[i] * rightProducts[i]
+    }
+
+    return result
 }
 ```
 
 # 螺旋矩阵
 
 ```Swift
-class Solution {
-    func spiralOrder(_ matrix: [[Int]]) -> [Int] {
-        var left = 0 
-        var right = matrix[0].count - 1 
-        
-        if matrix.count == 0 || matrix[0].count == 0 {
-            return [Int]()
-        }
-
-
-        var top = 0 
-        var bottom = matrix.count - 1
-        var ans = [Int]()
-        while left <=  right && top <= bottom {
-            for i in left...right {
-                ans.append(matrix[top][i])
-            }
-            if top < bottom {
-                for i  in top+1...bottom {
-                    ans.append(matrix[i][right])
-                }
-            }
-          
-           if left < right && top < bottom {
-                    // 右往左 
-                for column in stride(from: right - 1, through: left + 1, by:-1) {
-                    ans.append(matrix[bottom][column])
-                }
-
-                // 下往上
-                for row in stride(from: bottom , through:top + 1 , by:-1) {
-                    ans.append(matrix[row][left])
-                }
-           }
-           
-            left += 1
-            right -= 1
-            top += 1 
-            bottom -= 1 
-        }
-        return ans
-
+func spiralOrder(_ matrix: [[Int]]) -> [Int] {
+    var left = 0 
+    var right = matrix[0].count - 1 
+    
+    if matrix.count == 0 || matrix[0].count == 0 {
+        return [Int]()
     }
+
+
+    var top = 0 
+    var bottom = matrix.count - 1
+    var ans = [Int]()
+    while left <=  right && top <= bottom {
+        for i in left...right {
+            ans.append(matrix[top][i])
+        }
+        if top < bottom {
+            for i  in top+1...bottom {
+                ans.append(matrix[i][right])
+            }
+        }
+        
+        if left < right && top < bottom {
+                // 右往左 
+            for column in stride(from: right - 1, through: left + 1, by:-1) {
+                ans.append(matrix[bottom][column])
+            }
+
+            // 下往上
+            for row in stride(from: bottom , through:top + 1 , by:-1) {
+                ans.append(matrix[row][left])
+            }
+        }
+        
+        left += 1
+        right -= 1
+        top += 1 
+        bottom -= 1 
+    }
+    return ans
+
 }
 ```
 
 # 旋转图像
 
 ```Swift
-class Solution {
-    func rotate(_ matrix: inout [[Int]]) {
-        let n = matrix.count
+func rotate(_ matrix: inout [[Int]]) {
+    let n = matrix.count
 
-        // 先进行矩阵的转置操作
-        for i in 0..<n {
-            for j in i..<n {
-                let temp = matrix[i][j]
-                matrix[i][j] = matrix[j][i]
-                matrix[j][i] = temp
-            }
-        }
-
-        // 对每一行进行反转操作
-        for i in 0..<n {
-            matrix[i].reverse()
+    // 先进行矩阵的转置操作
+    for i in 0..<n {
+        for j in i..<n {
+            let temp = matrix[i][j]
+            matrix[i][j] = matrix[j][i]
+            matrix[j][i] = temp
         }
     }
-}
 
+    // 对每一行进行反转操作
+    for i in 0..<n {
+        matrix[i].reverse()
+    }
+}
 ```
 
 # 颜色分类
 
 ```Swift
-class Solution {
-    func sortColors(_ nums: inout [Int]) {
-        var low = 0
-        var high = nums.count - 1
-        var current = 0
+func sortColors(_ nums: inout [Int]) {
+    var low = 0
+    var high = nums.count - 1
+    var current = 0
 
-        while current <= high {
-            if nums[current] == 0 {
-                // 交换当前元素和低位元素
-                (nums[current], nums[low]) = (nums[low], nums[current])
-                low += 1
-                current += 1
-            } else if nums[current] == 2 {
-                // 交换当前元素和高位元素
-                (nums[current], nums[high]) = (nums[high], nums[current])
-                high -= 1
-            } else {
-                // 当前元素为1，直接移动到下一位
-                current += 1
-            }
+    while current <= high {
+        if nums[current] == 0 {
+            // 交换当前元素和低位元素
+            (nums[current], nums[low]) = (nums[low], nums[current])
+            low += 1
+            current += 1
+        } else if nums[current] == 2 {
+            // 交换当前元素和高位元素
+            (nums[current], nums[high]) = (nums[high], nums[current])
+            high -= 1
+        } else {
+            // 当前元素为1，直接移动到下一位
+            current += 1
         }
     }
 }
@@ -1190,76 +1110,70 @@ class Solution {
 # 删除链表的倒数第N个结点
 
 ```Swift
-class Solution {
-    func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
-        guard let head = head else { 
-            return nil 
-        }
-
-        var dummy = ListNode(0)
-        dummy.next = head
-        var fast: ListNode? = dummy
-        var slow: ListNode? = dummy
-
-        for _ in 0...n {
-            fast = fast?.next
-        }
-
-        while fast != nil {
-            fast = fast?.next
-            slow = slow?.next
-        }
-
-        slow?.next = slow?.next?.next
-
-        return dummy.next
+func removeNthFromEnd(_ head: ListNode?, _ n: Int) -> ListNode? {
+    guard let head = head else { 
+        return nil 
     }
+
+    var dummy = ListNode(0)
+    dummy.next = head
+    var fast: ListNode? = dummy
+    var slow: ListNode? = dummy
+
+    for _ in 0...n {
+        fast = fast?.next
+    }
+
+    while fast != nil {
+        fast = fast?.next
+        slow = slow?.next
+    }
+
+    slow?.next = slow?.next?.next
+
+    return dummy.next
 }
 ```
 
 # 验证二叉搜索树
 
 ```Swift
-class Solution {
-    func isValidBST(_ root: TreeNode?) -> Bool {
-        return isValidBST(root, Int.min, Int.max)
-    }
+func isValidBST(_ root: TreeNode?) -> Bool {
+    return isValidBST(root, Int.min, Int.max)
+}
 
-    func isValidBST(_ node: TreeNode?, _ lowerBound: Int, _ upperBound: Int) -> Bool {
-        guard let node = node else {
-            return true
-        }
-        if node.val <= lowerBound || node.val >= upperBound {
-            return false
-        }
-        return isValidBST(node.left, lowerBound, node.val) && isValidBST(node.right, node.val, upperBound)
+func isValidBST(_ node: TreeNode?, _ lowerBound: Int, _ upperBound: Int) -> Bool {
+    guard let node = node else {
+        return true
     }
+    if node.val <= lowerBound || node.val >= upperBound {
+        return false
+    }
+    return isValidBST(node.left, lowerBound, node.val) && isValidBST(node.right, node.val, upperBound)
 }
 ```
 
 # 寻找重复数
 
 ```Swift
-class Solution {
-    func findDuplicate(_ nums: [Int]) -> Int {
-        var slow = nums[0]
-        var fast = nums[0]
+func findDuplicate(_ nums: [Int]) -> Int {
+    var slow = nums[0]
+    var fast = nums[0]
 
-        // 利用快慢指针找到相遇点
-        repeat {
-            slow = nums[slow]
-            fast = nums[nums[fast]]
-        } while slow != fast
+    // 利用快慢指针找到相遇点
+    repeat {
+        slow = nums[slow]
+        fast = nums[nums[fast]]
+    } while slow != fast
 
-        // 将其中一个指针移回起点，然后两个指针以相同的速度移动，直到它们再次相遇
-        slow = nums[0]
-        while slow != fast {
-            slow = nums[slow]
-            fast = nums[fast]
-        }
-
-        return slow
+    // 将其中一个指针移回起点，然后两个指针以相同的速度移动，直到它们再次相遇
+    slow = nums[0]
+    while slow != fast {
+        slow = nums[slow]
+        fast = nums[fast]
     }
+
+    return slow
 }
 ```
 
