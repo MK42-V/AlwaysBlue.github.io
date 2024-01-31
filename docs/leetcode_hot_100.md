@@ -1582,13 +1582,264 @@ func lowestCommonAncestor(_ root: TreeNode?, _ p: TreeNode?, _ q: TreeNode?) -> 
 
 # 50.二叉树中的最大路径和
 
+- 二叉树中的 路径 被定义为一条节点序列，序列中每对相邻节点之间都存在一条边。同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
+- 路径和 是路径中各节点值的总和。
+- 给你一个二叉树的根节点 root ，返回其 最大路径和 。
+
+```Swift
+class Solution {
+    var maxSum: Int = Int.min
+    
+    func maxPathSum(_ root: TreeNode?) -> Int {
+        maxPathSumHelper(root)
+        return maxSum
+    }
+    
+    func maxPathSumHelper(_ root: TreeNode?) -> Int {
+        guard let root = root else {
+            return 0
+        }
+        
+        // 计算左子树和右子树的最大贡献值
+        let leftMax = max(0, maxPathSumHelper(root.left))
+        let rightMax = max(0, maxPathSumHelper(root.right))
+        
+        // 更新全局最大路径和
+        maxSum = max(maxSum, root.val + leftMax + rightMax)
+        
+        // 返回以当前节点为根的子树的最大贡献值
+        return root.val + max(leftMax, rightMax)
+    }
+}
+```
+
 # 51.岛屿数量
+
+- 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+- 岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+- 此外，你可以假设该网格的四条边均被水包围。
+
+```Swift
+class Solution {
+    //! 以当前点，扩散方向：左，右，上，下
+    let dx = [-1,1,0,0]
+    let dy = [0,0,-1,1]
+    var grid:[[Character]]!
+
+    func numIslands(_ grid: [[Character]]) -> Int {
+      var isLands = 0
+      self.grid = grid
+      //! 从左到右，从上到下，依次遍历
+      for i in 0..<grid.count {
+        for j in 0..<grid[i].count {
+          if grid[i][j] == "0" {
+            continue
+          }
+          //! 统计陆地+1，并且将附近的元素置为 水
+          isLands += sink(i,j)
+        }
+      }
+      return isLands
+    }
+    //! 扩散
+    func sink(_ i:Int, _ j:Int) -> Int {
+      if grid[i][j] == "0" {
+        return 0
+      }
+
+      //! i,j == 1
+      grid[i][j] = "0"
+      //! 对相邻的点，进行扩散
+      for k in 0..<dx.count {
+        let x = i + dx[k]
+        let y = j + dy[k]
+        if x >= 0 
+          && x < grid.count 
+          && y >= 0 
+          && y < grid[i].count {
+          if grid[x][y] == "0" {
+            continue
+          }
+          //! 如果是陆地，那么继续扩散，但是不统计
+          sink(x, y)
+        }
+      }
+      return 1
+  }
+}
+```
 
 # 52.腐烂的橘子
 
+- 在给定的 m x n 网格 grid 中，每个单元格可以有以下三个值之一：
+- 值 0 代表空单元格；
+- 值 1 代表新鲜橘子；
+- 值 2 代表腐烂的橘子。
+- 每分钟，腐烂的橘子 周围 4 个方向上相邻 的新鲜橘子都会腐烂。
+- 返回 直到单元格中没有新鲜橘子为止所必须经过的最小分钟数。如果不可能，返回 -1 。
+
+```Swift
+class Solution {
+    func orangesRotting(_ grid: [[Int]]) -> Int {
+        if grid.isEmpty {
+            return -1
+        }
+        // 行
+        let m = grid.count
+        // 列
+        let n = grid[0].count
+        // 新鲜水果个数
+        var fresh = 0
+        var queue = [[Int]]()
+        for i in 0..<m {
+            for j in 0..<n {
+                if grid[i][j] == 2 {
+                    queue.append([i, j])
+                } else if (grid[i][j] == 1) {
+                    fresh += 1
+                } 
+            }
+        }
+        if fresh == 0 {
+            return 0
+        }
+        var oranges = grid
+        // 记录被橘子感染的四个方向
+        let dirs = [[1 ,0], [-1, 0], [0, 1], [0, -1]]
+        var minutes = 0
+        while !queue.isEmpty && fresh > 0 {
+            var size = queue.count 
+            while size > 0 {
+                let x = queue[0][0]
+                let y = queue[0][1]
+                queue.removeFirst()
+                for i in 0..<4 {
+                    let dx = x + dirs[i][0]
+                    let dy = y + dirs[i][1]
+                    // 越界、或者是新鲜的橘子
+                    if dx < 0 || 
+                    dx >= m ||
+                    dy < 0 || 
+                    dy >= n ||
+                    oranges[dx][dy] != 1 {
+                        continue
+                    }
+                    oranges[dx][dy] = 2
+                    fresh -= 1
+                    queue.append([dx, dy])
+                }
+                size -= 1
+            }
+            minutes += 1
+        }
+        return fresh > 0 ? -1:minutes
+    }
+}
+```
+
 # 53.课程表
 
+- 你这个学期必须选修 numCourses 门课程，记为 0 到 numCourses - 1 。
+- 在选修某些课程之前需要一些先修课程。 先修课程按数组 prerequisites 给出，其中 prerequisites[i] = [ai, bi] ，表示如果要学习课程 ai 则 必须 先学习课程  bi 。
+- 例如，先修课程对 [0, 1] 表示：想要学习课程 0 ，你需要先完成课程 1 。
+- 请你判断是否可能完成所有课程的学习？如果可以，返回 true ；否则，返回 false 。
+
+```Swift
+func canFinish(_ numCourses: Int, _ prerequisites: [[Int]]) -> Bool {
+    // 每个课程需要直接前置课程的个数,写成一个数组
+    var degree: [Int] = [Int](repeating: 0, count: numCourses)
+    // 每个课程完成之后,可以直接学习的课程,写成一个数组
+    var nextCourses: [[Int]] = [[Int]](repeating: [], count: numCourses)
+    for item in prerequisites {
+        let cur = item[0] // 下一个课程
+        let pre = item[1] // 前置课程
+        degree[cur] += 1
+        nextCourses[pre].append(cur) // 获取每个pre的list,在上面添加cur
+    }
+
+    var queue: [Int] = []
+    for i in 0..<degree.count {
+        if degree[i] == 0 {
+            queue.append(i) // 入度为0的课程进入待打印队列
+        }
+    }
+    var res: [Int] = []
+    while queue.count>0 {
+        let top = queue.popLast()! // 将入度为0的队列的课程最上面的课程取出
+        res.append(top) // 打印出来
+        let list = nextCourses[top] // top课程为前提的课程列表
+        for x in list {
+            degree[x] -= 1 // 列表课程前度全部减1
+            if degree[x] == 0 { // 如果减为0, 加到队列中
+                queue.append(x)
+            }
+        }
+    }
+    return res.count == numCourses
+}
+```
+
 # 54.实现Trie（前缀树）
+
+- Trie（发音类似 "try"）或者说 前缀树 是一种树形数据结构，用于高效地存储和检索字符串数据集中的键。这一数据结构有相当多的应用情景，例如自动补完和拼写检查。
+
+- 请你实现 Trie 类：
+
+- Trie() 初始化前缀树对象。
+- void insert(String word) 向前缀树中插入字符串 word 。
+- boolean search(String word) 如果字符串 word 在前缀树中，返回 true（即，在检索之前已经插入）；否则，返回 false 。
+- boolean startsWith(String prefix) 如果之前已经插入的字符串 word 的前缀之一为 prefix ，返回 true ；否则，返回 false 。
+
+```Swift
+class TrieNode {
+    var children: [Character: TrieNode] = [:]
+    var isWord = false
+}
+
+class Trie { 
+    let root: TrieNode
+    init() { 
+        root = TrieNode()
+    }
+    
+    func insert(_ word: String) {
+        var cur = root
+        for c in word {
+            if let childNode = cur.children[c] {
+                cur = childNode
+            } else {
+                cur.children[c] = TrieNode()
+                cur = cur.children[c]!
+            }
+        }
+        cur.isWord = true
+    }
+    
+    func search(_ word: String) -> Bool {
+        var cur = root
+        for c in word {
+            if let childNode = cur.children[c] {
+                cur = childNode
+            } else {
+                return false
+            }
+        }
+        return cur.isWord
+    }
+    
+    func startsWith(_ prefix: String) -> Bool {
+        var cur = root 
+        for c in prefix {
+            if let childNode = cur.children[c] {
+                cur = childNode
+            } else {
+                return false
+            } 
+        }
+        return true
+    }
+}
+```
 
 # 55.全排列
 
@@ -1659,11 +1910,211 @@ class Solution {
 
 # 57.电话号码的字母组合
 
+- 给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+- 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+```Swift
+class Solution {
+    var letterCombinationsResult = [String]()
+    var letterCombinationsString = ""
+
+    func letterCombinations(_ digits: String) -> [String] {
+        let data = [Character](digits).map { ch -> String in
+            switch ch {
+            case "2":
+                return "abc"
+            case "3":
+                return "def"
+            case "4":
+                return "ghi"
+            case "5":
+                return "jkl"
+            case "6":
+                return "mno"
+            case "7":
+                return "pqrs"
+            case "8":
+                return "tuv"
+            case "9":
+                return "wxyz"
+            default:
+                return ""
+            }
+        }
+        
+        if data.count == 0 {
+            return []
+        }
+        
+        letterCombinationsDFS(data,0)
+        
+        return letterCombinationsResult
+    }
+
+    func letterCombinationsDFS(_ data:[String],_ index:Int) {
+        
+        if index > data.count - 1 {
+            letterCombinationsResult.append(letterCombinationsString)
+            return
+        }
+        
+        let value = data[index]
+        for c in value {
+            letterCombinationsString.append(c)
+            letterCombinationsDFS(data, index+1)
+            letterCombinationsString.removeLast()
+        }
+    }
+}
+```
+
 # 58.组合总和
+
+- 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。
+- candidates 中的 同一个 数字可以 无限制重复被选取 。如果至少一个数字的被选数量不同，则两种组合是不同的。 
+- 对于给定的输入，保证和为 target 的不同组合数少于 150 个。
+
+```Swift
+class Solution {
+    var combinationSumResult = [[Int]]()
+    var combinationSumPaths = [Int]()
+    func combinationSum(_ candidates: [Int], _ target: Int) -> [[Int]] {
+        
+        for i in 0..<candidates.count {
+            combinationSumDFS(candidates, i, target)
+        }
+        
+        return combinationSumResult
+    }
+
+    func combinationSumDFS(_ candidates: [Int],_ index:Int, _ target: Int) {
+        
+        if index > candidates.count - 1 {
+            return
+        }
+        
+        // 由于数组的值 > 0, 进行剪枝
+        if target < 0 {
+            return
+        }
+        
+        combinationSumPaths.append(candidates[index])
+        
+        if candidates[index] == target {
+            combinationSumResult.append(combinationSumPaths)
+            combinationSumPaths.removeLast()
+            return
+        }
+        
+        let tempTarget = target - candidates[index]
+        for i in index..<candidates.count {
+            combinationSumDFS(candidates, i, tempTarget)
+        }
+        
+        combinationSumPaths.removeLast()
+    }
+}
+```
 
 # 59.括号生成
 
+- 数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+```Swift
+// MARK: 本题的核心思想在于如何在已知n-1对合法括号的情况下推导到n对合法括号。
+/// 本题类似n个骰子的概率题。
+/// dp的含义：
+///     - dp[i]表示第i对所有的合法括号列表
+///     - dp[0] = [""] 且 dp[1] = ["()"]
+///     - dp[i]的递推公式为**"(" + dp[p]中任意一个合法括号 + ")" + dp[q]中任意一个合法括号**，其中**p+q=i-1**。
+///     - 显然p的取值范围为0～i-1
+func generateParenthesis(_ n: Int) -> [String] {
+    if n == 1 { return ["()"] }
+    var dp: [[String]] = [[""], ["()"]]
+    for i in 2...n {
+        var cur: [String] = []
+        for p in 0..<i {
+            /// **取dp[p]中任意一个合法括号**
+            for k in dp[p] {
+                /// **dp[q]中任意一个合法括号**
+                for l in dp[i-1-p] {
+                    cur.append("(" + k + ")" + l)
+                }
+            }
+        }
+        dp.append(cur)
+    }
+    return dp[n]
+}
+```
+
 # 60.单词搜索
+
+- 给定一个 m x n 二维字符网格 board 和一个字符串单词 word 。如果 word 存在于网格中，返回 true ；否则，返回 false 。
+- 单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+```Swift
+class Solution {
+        
+    var res = false
+    func exist(_ board: [[Character]], _ word: String) -> Bool {
+        
+        guard board.count > 0, word.count > 0 else {
+            return false
+        }
+
+        var board = board
+
+        var word = Array(word)
+
+        var used = Array(repeating: Array(repeating: 0, count: board[0].count), count: board.count)
+
+        for i in 0..<board.count {
+            for j in 0..<board[0].count {
+
+                if backtrack(&board, word, i, j, 0, &used) {
+                    res = true
+                }
+            }
+        }
+
+        return res
+    }
+
+    func backtrack(_ board: inout [[Character]], _ word: [Character], _ i: Int, _ j: Int, _ index: Int, _ used: inout [[Int]]) -> Bool {
+
+        if index >= word.count {
+            return true
+        }
+
+        if i < 0 || j < 0 || i >= board.count || j >= board[0].count {
+            return false
+        }
+
+        if board[i][j] != word[index] {
+            return false
+        }
+
+        if used[i][j] == 1 {
+            return false
+        }
+
+        used[i][j] = 1
+ 
+        if backtrack(&board, word, i + 1, j, index + 1, &used) ||
+        backtrack(&board, word, i - 1, j, index + 1, &used) ||
+        backtrack(&board, word, i, j + 1, index + 1, &used) ||
+        backtrack(&board, word, i, j - 1, index + 1, &used) {
+            return true
+        }
+
+        used[i][j] = 0
+
+        return false
+    }
+   
+}
+```
 
 # 61.分割回文串
 
@@ -1724,6 +2175,73 @@ func partition(_ s: String) -> [[String]] {
 ```
 
 # 62.N皇后
+
+- 按照国际象棋的规则，皇后可以攻击与之处在同一行或同一列或同一斜线上的棋子。
+- n 皇后问题 研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+- 给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
+- 每一种解法包含一个不同的 n 皇后问题 的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+
+```Swift
+class Solution {
+    var solveNQueensResult = [[Int]]() // 保存n皇后结果
+    var solveNQueensPath = [Int]() // 临时结果
+
+    var col = [Int]()          // 列方向
+    var diagonals1 = [Int]()   // 斜线方向
+    var diagonals2 = [Int]()   // 斜线方向
+
+    func solveNQueens(_ n: Int) -> [[String]] {
+        
+        solveNQueensDFS(n, 0)
+        
+        // 结果转换 [0，0，0，1] -> "...Q"
+        var tempResult = [[String]]()
+        for result in solveNQueensResult {
+            var tempData = [String]()
+            for c in result {
+                var tempString = ""
+                for i in 0..<n {
+                    if c == i {
+                        tempString.append("Q")
+                    }
+                    else {
+                        tempString.append(".")
+                    }
+                }
+                tempData.append(tempString)
+            }
+            tempResult.append(tempData)
+        }
+        
+        return tempResult
+    }
+
+    func solveNQueensDFS(_ n: Int, _ rowIndex: Int) {
+        
+        if rowIndex > n - 1 {
+            solveNQueensResult.append(solveNQueensPath)
+            return
+        }
+        
+        for i in 0..<n {
+            if col.contains(i) || diagonals1.contains(rowIndex-i) ||  diagonals2.contains(rowIndex+i){
+                continue
+            }
+            
+            col.append(i)
+            diagonals1.append(rowIndex - i)
+            diagonals2.append(rowIndex + i)
+            solveNQueensPath.append(i)
+            print(solveNQueensPath)
+            solveNQueensDFS(n, rowIndex+1)
+            solveNQueensPath.removeLast()
+            diagonals2.removeLast()
+            diagonals1.removeLast()
+            col.removeLast()
+        }
+    }
+}
+```
 
 # 63.搜索插入位置
 
@@ -1901,6 +2419,35 @@ class Solution {
 
 # 68.寻找两个正序数组的中位数
 
+- 给定两个大小分别为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的 中位数 。
+- 算法的时间复杂度应该为 O(log (m+n)) 。
+
+```Swift
+func findMedianSortedArrays(_ nums1: [Int], _ nums2: [Int]) -> Double {
+    var mergeArray = [Int](repeating: 0, count: nums1.count+nums2.count)
+    var i = 0
+    var j = 0
+
+    for index in 0..<mergeArray.count {
+    
+    if (j >= nums2.count) || (i < nums1.count && nums1[i] <= nums2[j])  {
+        mergeArray[index] = nums1[i]
+        i+=1
+    } else  {
+        mergeArray[index] = nums2[j]
+        j+=1
+    }
+    
+    }
+
+    if mergeArray.count % 2 == 0 {
+    return Double(mergeArray[mergeArray.count/2-1] + mergeArray[mergeArray.count/2]) / 2.0
+    } else {
+    return Double(mergeArray[mergeArray.count/2])
+    }
+}
+```
+
 # 69.有效的括号
 
 ```Swift
@@ -2028,6 +2575,31 @@ func dailyTemperatures(_ temperatures: [Int]) -> [Int] {
 
 # 73.柱状图中最大的矩形
 
+- 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+- 求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+```Swift
+func largestRectangleArea(_ heights: [Int]) -> Int {
+    var heights = [0] + heights + [0]
+    var maxArea: Int = 0
+    var stack: [Int] = []
+
+    for (index, height) in heights.enumerated() {
+
+        while !stack.isEmpty && stack.last != nil && heights[stack.last!] > height {
+            let removed = stack.removeLast()   
+            if let leftEdge = stack.last {
+                var rightEdge = index
+                maxArea = max(maxArea, heights[removed] * (rightEdge - 1 - leftEdge))
+            }
+        }
+        stack.append(index)
+    }
+
+    return maxArea
+}
+```
+
 # 74.数组中的第K个最大元素
 
 - 给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
@@ -2102,7 +2674,98 @@ class Solution {
 
 # 75.前K个高频元素
 
+- 给你一个整数数组 nums 和一个整数 k ，请你返回其中出现频率前 k 高的元素。你可以按 任意顺序 返回答案。
+
+```Swift
+func topKFrequent(_ nums: [Int], _ k: Int) -> [Int] {
+    var hashTable: [Int: Int] = [:]
+    for num in nums {
+        if let count = hashTable[num] {
+            hashTable[num] = count + 1
+        } else {
+            hashTable[num] = 1
+        }
+    }
+
+    var bucket: [[Int]] = Array(repeating: [], count: nums.count + 1)
+    // 桶排序，将出现的频率作为数组的下标位置，存入num
+    for key in hashTable.keys {
+        if let count = hashTable[key] {
+            var array = bucket[count]
+            if array.isEmpty {
+                bucket[count] = [key]
+            } else {
+                bucket[count] = array + [key]
+            }
+        }
+    }
+
+    var k = k 
+
+    var targetArray: [Int] = []
+    for array in bucket.reversed() {
+        if k == 0 { return targetArray }
+        if array.isEmpty {
+            continue
+        } else {
+            targetArray.append(contentsOf: array)
+            k = k - array.count
+        }
+    }
+    return targetArray
+}
+```
+
 # 76.数据流的中位数
+
+- 中位数是有序整数列表中的中间值。如果列表的大小是偶数，则没有中间值，中位数是两个中间值的平均值。
+- 例如 arr = [2,3,4] 的中位数是 3 。
+- 例如 arr = [2,3] 的中位数是 (2 + 3) / 2 = 2.5 。
+- 实现 MedianFinder 类:
+
+- MedianFinder() 初始化 MedianFinder 对象。
+- void addNum(int num) 将数据流中的整数 num 添加到数据结构中。
+- double findMedian() 返回到目前为止所有元素的中位数。与实际答案相差 10-5 以内的答案将被接受。
+
+```Swift
+class MedianFinder { 
+    var arr = [Int]()
+    init() {
+
+    }
+    
+    func addNum(_ num: Int) {
+        if arr.count == 0 || num > arr.last! {
+            arr.append(num)
+        } else {
+            let index = bs(arr, num)
+            arr.insert(num, at: index)
+        } 
+    }
+    
+    func findMedian() -> Double {
+        let mid = (arr.count - 1) / 2
+        if arr.count % 2 == 0 {
+            return Double(arr[mid] + arr[mid + 1]) / 2.0
+        } else {
+            return Double(arr[mid])
+        }
+    } 
+
+    func bs(_ arr: [Int], _ target: Int) -> Int {
+        var left = 0, right = arr.count - 1
+        while left < right {
+            let mid = left + (right - left) / 2
+            if arr[mid] < target {
+                left = mid + 1
+            } else {
+                right = mid
+            }
+        }
+        return left
+    }
+}
+```
 
 # 77.买卖股票的最佳时机
 
@@ -2143,7 +2806,72 @@ func canJump(_ nums: [Int]) -> Bool {
 
 # 79.跳跃游戏 II
 
+- 给定一个长度为 n 的 0 索引整数数组 nums。初始位置为 nums[0]。
+- 每个元素 nums[i] 表示从索引 i 向前跳转的最大长度。换句话说，如果你在 nums[i] 处，你可以跳转到任意 nums[i + j] 处:
+- 0 <= j <= nums[i] 
+- i + j < n
+- 返回到达 nums[n - 1] 的最小跳跃次数。生成的测试用例可以到达 nums[n - 1]。
+
+```Swift
+func jump(_ nums: [Int]) -> Int {
+    if nums.count == 1 {
+        return 0
+    }
+
+    var steps = 0
+    var maxReach = 0
+    var lastJump = 0
+
+    for i in 0..<nums.count - 1 {
+        maxReach = max(maxReach, i + nums[i])
+
+        if i == lastJump {
+            // 当达到上一次跳跃的最大范围时，进行下一次跳跃
+            lastJump = maxReach
+            steps += 1
+        }
+    }
+
+    return steps
+}
+```
+
 # 80.划分字母区间
+
+- 给你一个字符串 s 。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。
+- 注意，划分结果需要满足：将所有划分结果按顺序连接，得到的字符串仍然是 s 。
+- 返回一个表示每个字符串片段的长度的列表。
+
+```Swift
+func partitionLabels(_ s: String) -> [Int] {
+    var lastIndices = [Int](repeating: 0, count: 26)
+    let asciiOffset = Int(Character("a").asciiValue!)
+
+    // 记录每个字母最后出现的位置
+    for (index, char) in s.enumerated() {
+        let charIndex = Int(char.asciiValue!) - asciiOffset
+        lastIndices[charIndex] = index
+    }
+
+    var partitions = [Int]()
+    var start = 0
+    var end = 0
+
+    // 遍历字符串，找到每个字母的结束位置，形成字母区间
+    for (index, char) in s.enumerated() {
+        let charIndex = Int(char.asciiValue!) - asciiOffset
+        end = max(end, lastIndices[charIndex])
+
+        if index == end {
+            // 当遍历到字母的结束位置时，形成一个字母区间
+            partitions.append(end - start + 1)
+            start = index + 1
+        }
+    }
+
+    return partitions
+}
+```
 
 # 81.爬楼梯
 
@@ -2316,13 +3044,134 @@ class Solution {
 
 # 88.乘积最大子数组
 
+- 给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+- 测试用例的答案是一个 32-位 整数。
+- 子数组 是数组的连续子序列。
+
+```Swift
+func maxProduct(_ nums: [Int]) -> Int {
+    guard nums.count > 1 else { return nums.first ?? 0 }
+
+    var result: Int = .min
+    var imin: Int = 1
+    var imax: Int = 1
+
+    for i in 0 ..< nums.count {
+        if nums[i] < 0 { (imin, imax) = (imax, imin) }
+
+        imax = max(nums[i], imax * nums[i])
+        imin = min(nums[i], imin * nums[i])
+
+        result = max(result, imax)
+    }
+
+    return result
+}
+```
+
 # 89.分割等和子集
+
+- 给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+```Swift
+func canPartition(_ nums: [Int]) -> Bool {
+    var sum = 0
+    for i in 0..<nums.count {
+        let num = nums[i]
+        sum += num
+    }
+
+    if sum % 2 != 0 {
+        return false
+    }
+    
+    let count = nums.count
+    sum = sum / 2
+    
+    var dp = [Bool](repeating: false, count: sum + 1)
+    dp[0] = true
+    
+    for i in 0..<count {
+        for j in (0..<dp.count).reversed() {
+            if j - nums[i] >= 0 {
+                dp[j] = dp[j] || dp[j - nums[i]]
+            }
+        }
+    }
+    return dp[sum]
+}
+```
 
 # 90.最长有效括号
 
+- 给你一个只包含 '(' 和 ')' 的字符串，找出最长有效（格式正确且连续）括号子串的长度。
+
+```Swift
+func longestValidParentheses(_ s: String) -> Int {
+    var strArr = Array(s)
+    var stack = [-1]
+    var result = 0
+    for i in 0 ..< strArr.count {
+        if strArr[i] == "(" {
+            stack.append(i)
+        } else {
+            if stack.count > 1 && strArr[stack.last!] == "(" {
+                stack.removeLast()
+                result = max(result, i - stack.last!)
+            } else {
+                stack.append(i)
+            }
+        }
+    }
+    return result
+}
+```
+
 # 91.不同路径
 
+- 一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+- 机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+- 问总共有多少条不同的路径？
+
+```Swift
+func uniquePaths(_ m: Int, _ n: Int) -> Int {
+    var dp = [Int](repeating: 1, count: m)
+    for _ in 1..<n {
+        for col in 1..<m {
+            dp[col] = dp[col] + dp[col-1]
+        }
+    }
+    return dp[m-1]
+}
+```
+
+
 # 92.最小路径和
+
+- 给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+- 说明：每次只能向下或者向右移动一步。
+
+```Swift
+func minPathSum(_ grid: [[Int]]) -> Int {
+    var dp = [[Int]](repeating:[Int](repeating: 0, count: grid[0].count), count: grid.count)
+    
+    dp[0][0] = grid[0][0]
+    
+    for i in 0..<grid.count {
+        for j in 0..<grid[0].count {
+            if i > 0 && j > 0 {
+                dp[i][j] = min(dp[i-1][j],dp[i][j-1]) + grid[i][j]
+            } else if i > 0 {
+                dp[i][j] = dp[i-1][j] + grid[i][j]
+            } else if j > 0{
+                dp[i][j] = dp[i][j-1] + grid[i][j]
+            }
+        }
+    }
+    
+    return dp.last!.last!
+}
+```
 
 # 93.最长回文子串
 
@@ -2371,7 +3220,75 @@ func longestPalindrome(_ s: String) -> String {
 
 # 94.最长公共子序列
 
+- 给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+- 一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+- 例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+- 两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
+
+```Swift
+func longestCommonSubsequence(_ text1: String, _ text2: String) -> Int {
+
+    var dp: [[Int]] = Array(repeating: Array(repeating: 0, count: text2.count + 1), count: text1.count + 1)
+
+    let array1 = Array(text1)
+    let array2 = Array(text2)
+
+    for i in 1...array1.count {
+        for j in 1...array2.count {
+            if array1[i - 1] == array2[j - 1] {
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            } else {
+                dp[i][j] = max(dp[i][j - 1], dp[i - 1][j])
+            }
+        }
+    }
+
+    return dp[text1.count][text2.count]
+}
+```
+
 # 95.编辑距离
+- 给你两个单词 word1 和 word2， 请返回将 word1 转换成 word2 所使用的最少操作数  。
+- 你可以对一个单词进行如下三种操作：
+- 插入一个字符
+- 删除一个字符
+- 替换一个字符
+
+```Swift
+func minDistance(_ word1: String, _ word2: String) -> Int {
+    let m = word1.count
+    let n = word2.count
+
+    if n == 0 || m == 0 {
+        return max(m, n)
+    }
+    
+    // 初始化动态规划数组
+    var dp = Array(repeating: Array(repeating: 0, count: n + 1), count: m + 1)
+    
+    // 初始化边界条件
+    for i in 0...m {
+        dp[i][0] = i
+    }
+    
+    for j in 0...n {
+        dp[0][j] = j
+    }
+    
+    // 动态规划递推
+    for i in 1...m {
+        for j in 1...n {
+            if word1[word1.index(word1.startIndex, offsetBy: i-1)] == word2[word2.index(word2.startIndex, offsetBy: j-1)] {
+                dp[i][j] = dp[i-1][j-1]
+            } else {
+                dp[i][j] = min(dp[i][j-1], dp[i-1][j], dp[i-1][j-1]) + 1
+            }
+        }
+    }
+    
+    return dp[m][n]
+}
+```
 
 # 96.只出现一次的数字
 
