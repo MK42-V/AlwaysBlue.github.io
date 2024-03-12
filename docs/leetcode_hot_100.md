@@ -129,6 +129,10 @@ func maxArea(_ height: [Int]) -> Int {
 
 # 6.三数之和
 
+- 给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i != j、i != k 且 j != k ，同时还满足 nums[i] + nums[j] + nums[k] == 0 。请
+- 你返回所有和为 0 且不重复的三元组。
+- 注意：答案中不可以包含重复的三元组。
+
 ```Swift
 func threeSum(_ nums: [Int]) -> [[Int]] {
     var result: [[Int]] = []
@@ -177,6 +181,8 @@ func threeSum(_ nums: [Int]) -> [[Int]] {
 
 # 7.接雨水
 
+- 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
 ```Swift
 func trap(_ height: [Int]) -> Int {
     // 无法形成凹槽，返回0
@@ -215,6 +221,8 @@ func trap(_ height: [Int]) -> Int {
 
 # 8.无重复字符的最长子串
 
+- 给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串 的长度。
+
 ```Swift
 func lengthOfLongestSubstring(_ s: String) -> Int {
     var maxLength = 0
@@ -238,6 +246,9 @@ func lengthOfLongestSubstring(_ s: String) -> Int {
 ```
 
 # 9.找到字符串中所有字母异位词
+
+- 给定两个字符串 s 和 p，找到 s 中所有 p 的 异位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+- 异位词 指由相同字母重排列形成的字符串（包括相同的字符串）。
 
 ```Swift
 func findAnagrams(_ s: String, _ p: String) -> [Int] {
@@ -321,7 +332,7 @@ func subarraySum(_ nums: [Int], _ k: Int) -> Int {
 # 11.滑动窗口的最大值
 
 - 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
-- 返回 滑动窗口中的最大值 。
+- 返回每次滑动 滑动窗口中的最大值 。
 
 ```Swift
 func maxSlidingWindow(_ nums: [Int], _ k: Int) -> [Int] {
@@ -334,9 +345,11 @@ func maxSlidingWindow(_ nums: [Int], _ k: Int) -> [Int] {
     
     // 定义函数，用于从队列尾部删除小于等于给定值的元素
     func cleanDeque(_ index: Int) {
+        // 窗口大小超出k
         while !deque.isEmpty && deque.first! < index - k + 1 {
             deque.removeFirst()
         }
+        // 进来的更大
         while !deque.isEmpty && nums[deque.last!] < nums[index] {
             deque.removeLast()
         }
@@ -418,6 +431,8 @@ func minWindow(_ s: String, _ t: String) -> String {
 ```
 
 # 13.最大子数组和
+
+- 给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
 
 ```Swift
 func maxSubArray(_ nums: [Int]) -> Int {
@@ -3314,7 +3329,7 @@ func singleNumber(_ nums: [Int]) -> Int {
 func majorityElement(_ nums: [Int]) -> Int {
     var count = 0
     var majority = 0
-    for (index, num) in nums.enumerated() {
+    for num in nums {
         if count == 0 {
             majority = num
             count += 1
